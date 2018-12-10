@@ -1,0 +1,418 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[backend=biber,
+style=alphabetic,
+doi=false,
+isbn=false,
+url=false]{biblatex}
+\usepackage{hyperref}
+
+\addbibresource{outline.bib}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}[definition]{Remark}
+
+\theoremstyle{plain}
+\newtheorem{prop}[definition]{Proposition}
+\newtheorem{theorem}[definition]{Theorem}
+
+\newcommand{\mathlib}{\texttt{mathlib}}
+\newcommand{\lmc}{\texttt{lean-model-categories}}
+
+\newcommand{\KQ}{Kan--Quillen}
+
+\newcommand{\Set}{\mathrm{Set}}
+\newcommand{\id}{\mathrm{id}}
+
+\newcommand{\cell}{\mathrm{cell}}
+\newcommand{\cof}{\mathrm{cof}}
+\newcommand{\llp}{\mathrm{llp}}
+\newcommand{\rlp}{\mathrm{rlp}}
+
+\DeclareMathOperator{\Cyl}{Cyl}
+\DeclareMathOperator{\Ex}{Ex}
+
+\DeclareMathOperator{\colim}{colim}
+
+\begin{document}
+
+\section{Overview}
+
+The high-level goals of the {\tt lean-model-categories} project are to develop the theory of model categories and construct some of the most important examples, via the following progression of topics:
+
+\begin{itemize}
+\item locally presentable categories;
+\item weak factorization systems and the small object argument;
+\item combinatorial model categories;
+\item accessible categories;
+\item the machinery of Olschok (generalizing ``Cisinski model categories'') for constructing combinatorial model categories in which all objects are cofibrant;
+\item and the facts about simplicial sets needed to apply this machinery to constructing the \KQ{} and Joyal model category structures.
+\end{itemize}
+
+After a section on basic category theory in Lean, the remaining sections will describe the intended content for each of the above topics.
+
+\section{Basic category theory}
+
+This section describes the current status of basic category theory in Lean.
+The upper limit of ``basic'' category theory is a bit nebulous, of course; here we'll consider anything involving a weak factorization system or a cardinal or ordinal to fall outside the bounds of basic category theory.
+
+\mathlib{} already contains the essentials---categories, functors, and natural transformations---as well as a number of elementary notions such as isomorphisms, product categories and functor categories, and most importantly for our purposes, limits and colimits.
+
+Relevant basic notions not yet available in \mathlib{} include:
+
+\begin{itemize}
+\item Connected categories, cofinal functors and the fact that cofinal functors preserve colimits.
+\item Adjunctions.
+  Left/right adjoints preserve colimits/limits.
+\item Reflective subcategories and the fact that a reflective subcategory is (co)complete if the ambient category is.
+\item A convenient way to work with the arrow category of a category and translate between objects and morphisms of the arrow category and morphisms and commutative squares of the original category.
+\item The left Kan extension of a functor on $A$ to a functor on presheaves on $A$ and basic facts about this extension.
+\item Presheaf categories are cartesian closed.
+\end{itemize}
+
+\section{Locally presentable categories}
+
+This section includes anything that involves a regular cardinal.
+For technical reasons, we call the cardinal $\kappa$, not $\lambda$!
+\mathlib{} already has a theory of regular cardinals which should be sufficient for our purposes.
+
+The canonical source for everything in this section is \cite{AR}.
+
+\paragraph{$\kappa$-filtered categories.}
+Define $\kappa$-filtered categories.
+Every $\kappa$-filtered category admits a cofinal functor from a $\kappa$-directed poset.
+I'm not sure whether this fact is strictly necessary for our purposes, but I suspect proving it will be worthwhile.
+
+We'll need the fact that in $\Set$, $\kappa$-filtered colimits commute with $\kappa$-small limits.
+
+\paragraph{$\kappa$-compact objects.}
+Define these and, using the previous fact, show that a $\kappa$-small colimit of $\kappa$-compact objects is again $\kappa$-compact.
+
+\paragraph{Locally presentable categories.}
+We now have enough material to define locally presentable categories.
+Show that every object of a locally presentable category is $\kappa$-compact for some $\kappa$; this will satisfy a condition of the small object argument.
+For the applications, show that presheaf categories are locally presentable.
+(Adapt the proof of \cite{AR}, 1.11.)
+We might also need to show more generally that the functor category $C^I$ is locally presentable if $C$ is.
+
+Prove that locally presentable categories are complete (\cite{AR}, 1.28).
+But we only need this to check off half of model category axiom M1, and as we already know the category of primary interest (simplicial sets) is complete, maybe this isn't essential.
+
+\section{Weak factorization systems and the small object argument}
+
+Proving the existence of cofibrantly generated weak factorization systems would be a significant milestone on the way towards constructing nontrivial model categories.
+For future applications we should show that the factorization can be chosen functorially and that, when the ambient category is locally presentable, this functor is accessible.
+We should also incorporate the variation on the argument which is used in the proof of existence of combinatorial model categories.
+We will give a precise statement below.
+
+\paragraph{Weak factorization systems.}
+Defining weak factorization systems is quite easy.
+Define the ``lifing property'' relation between a pair of maps, and then $\llp(-)$ and $\rlp(-)$, and then define a WFS.
+
+\paragraph{Functorial factorizations.}
+For a later application we will need to know that there exist accessible (co)fibrant replacement functors, so we should begin by at least defining functorial factorizations.
+
+The usual definition of a ``bare'' functorial factorization (without any conditions) is as a functor $C^{[1]} \to C^{[2]}$ whose composition with the ``composition'' functor $C^{[2]} \to C^{[1]}$ is the identity functor of $C^{[1]}$.
+This definition involves an equality between functors, which involves an equality between objects, which tends to be awkward to work with in Lean for foundational reasons.
+Therefore, we instead adopt the following definition.
+
+\begin{definition}
+  Let $C$ be a category.
+  Then there are two ``domain'' and ``codomain'' functors $C^{[1]} \to C$, related by a canonical natural transformation $\eta$ which carries an object of $C^{[1]}$ to the same thing viewed as a map of $C$.
+  A \emph{functorial factorization} on $C$ is a factorization of $\eta$ through another functor $F : C^{[1]} \to C$.
+\end{definition}
+
+A functorial factorization for a weak factorization system is of course a functorial factorization in which the first (respectively, second) natural transformation takes values in the left (respectively, right) class of the WFS.
+We will call a functorial factorization \emph{accessible} if $F$ is an accessible functor (i.e., $F$ preserves $\kappa$-filtered colimits for some $\kappa$).
+
+\paragraph{Transfinite compositions.}
+
+\begin{definition}
+  Let $C$ be a category, $I$ a class of maps in $C$ and $K$ a well-ordered set with least element $\bot$ and greatest element $\top$.
+  A \emph{transfinite composition} of length $K$ of maps in $I$ is a functor $F : K \to C$ such that
+  \begin{itemize}
+  \item for each $k \in K$ with successor $k^+$, the map $F(k) \to F(k^+)$ belongs to $I$;
+  \item for each limit $k \in K$ (not $\bot$), the cocone $\{\,F(j) \to F(k) \mid j < k\,\}$ is a colimit cocone on the restriction of $F$ to $\{\,j \mid j < k\,\}$.
+  \end{itemize}
+  The \emph{composition} of $F$ is the map $F(\bot) \to F(\top)$.
+\end{definition}
+
+This definition is nonstandard in two ways.
+\begin{itemize}
+\item
+  Normally we would index a transfinite composition on an ordinal $\gamma$, rather than an arbitrary well-ordered set.
+  This makes sense because classically an ordinal is itself a set (the set of smaller ordinals) which carries a well-ordering, and serves as a canonical representative of its order type.
+
+  In Lean, an ordinal is an \emph{equivalence class} of well-ordered sets, and there is actually no way to produce a canonical representative of a given ordinal $\gamma$.
+  (The type of ordinals less than $\gamma$ has the correct order type, but it lives in the next universe, because it involves quantification over all ordinals, and therefore it is not suitable as the indexing category for a colimit.)
+  So we may as well just work with a chosen well-ordered set $K$ directly.
+
+\item
+  Most sources only ask for a functor $F$ defined on the open interval $\{\,\alpha \mid 0 \le \alpha < \gamma\,\}$ (possibly influenced by the traditional identification of the ordinal $\gamma$ with this set?) and then define the composition to be ``the'' map $F(0) \to \colim_{\alpha < \gamma} F(\alpha)$.
+  Strictly speaking, this definition does not make sense unless the ambient category has already been equipped with a choice of colimits so that we can identify the codomain of this map.
+  By including the upper endpoint in the domain of $F$, we avoid this ambiguity; the definition of the composition also becomes simpler.
+  (Compare \cite{R}, Remark 3.2, which does include the upper bound in the definition of a smooth chain.)
+\end{itemize}
+
+The cofinality of a transfinite composition is the cofinality of the order-type of $\{\,k \in K \mid k < \top\,\}$.
+Lean already knows the relevant facts about cofinality, for example that there exist order-types of arbitrarily large cofinality.
+
+\paragraph{Properties of weak factorization systems.}
+Prove the standard closure properties of the left class of a WFS: it contains isomorphisms and is closed under composition, coproducts, pushouts, transfinite compositions and retracts.
+More specifically, for a class of maps $I$, define $\cell(I)$ to be the class of maps which can be written as a transfinite composition of pushouts of maps of $I$.
+Prove that $\cell(I)$ also contains coproducts of maps of $I$ and that $\cell(\cell(I)) = \cell(I)$.
+Define $\cof(I)$ to be the class of maps which are retracts of maps in $\cell(I)$.
+Finally, for any class $L$ (even one which does not generate a weak factorization system), show that $\cof(L) \subset \llp(\rlp(L))$, and conclude that $\cof(L) \subset L$ if $L$ is the left class of a WFS.
+
+\paragraph{``Permits the small object argument''.}
+
+\begin{definition}
+  Let $C$ be a cocomplete category, $\kappa$ a regular cardinal and $J$ a class of maps of $C$.
+  An object $A$ is \emph{$\kappa$-small} with respect to $J$ if whenever $F$ is a transfinite composition of maps in $J$ of cofinality at least $\kappa$, any map $f : A \to F(\top)$ factors through $F(k) \to F(\top)$ for some $k < \top$.
+\end{definition}
+
+The following definition is slightly nonstandard, but captures the exact property that will be needed in our variant of the small object argument.
+
+\begin{definition}
+  Let $C$ be a cocomplete category.
+  A pair of classes of maps $(I, J)$ in $C$ is said to \emph{permit the small object argument} if there exists a regular cardinal $\kappa$ such that the domains of the morphisms of $I$ are $\kappa$-small with respect to $\cell(J)$.
+\end{definition}
+
+The usual notion is recovered by taking $J = I$; then we say that $I$ permits the small object argument.
+
+In a locally presentable category, we showed that any object is $\kappa$-small for some $\kappa$.
+Conclude that any object of a locally presentable category is small with respect to any class of maps, and so whenever $I$ is a \emph{set}, $(I, J)$ permits the small object argument.
+
+\paragraph{The small object argument.}
+We need to prove the following variant of the small object argument, adapted from \cite{B}.
+
+\begin{prop}
+  Let $C$ be a cocomplete category.
+  Suppose that in $C$ we are given
+  \begin{itemize}
+  \item a class of morphisms $W$ such that $f \in W$, $gf \in W$ implies $g \in W$;
+  \item a \emph{set} of maps $I$ and a class of maps $J$ such that
+    \begin{itemize}
+    \item $\cell(J) \subset W$,
+    \item $J$ is dense between $I$ and $W$ in the arrow category of $C$, and
+    \item $(I, J)$ permits the small object argument.
+    \end{itemize}
+  \end{itemize}
+  Then any map of $W$ admits a functorial factorization as a map of $\cell(J)$ followed by a map of $\rlp(I)$.
+\end{prop}
+
+Here ``$J$ is dense between $I$ and $W$'' means that any morphism (i.e., commutative square) from an element of $I$ to an element of $W$ factors through some element of $J$.
+
+\begin{proof}
+  See \cite{B}, Lemma 1.8.
+\end{proof}
+
+Obtain the usual small object argument by taking $W$ to be the class of all maps of $C$ and taking $J = I$.
+The generalization will be used in the construction of combinatorial model categories.
+
+\paragraph{Accessibility of factorization.}
+Show that when $C$ is locally presentable, the functorial factorization produced by the small object argument is accessible.
+
+\paragraph{Cofibrantly generated WFSs.}
+Define a WFS $(L, R)$ to be \emph{cofibrantly generated} if there is a set $I$ which permits the small object argument such that $R = \rlp(I)$.
+Prove that every set of maps $I$ which permits the small object argument does define a WFS $(\llp(\rlp(I)), \rlp(I))$ and show that in this case
+$\llp(\rlp(I)) = \cof(I)$.
+Part of this is the ``retract argument''; extract it for later use.
+
+\section{Combinatorial model categories}
+
+The main milestone in this section is Jeff Smith's theorem on the existence of combinatorial model categories.
+
+\paragraph{Model categories.}
+Define what it means for a class of maps to satisfy the two-out-of-three property.
+Then define a model category as a cocomplete and complete category $M$ equipped with three classes of maps $C$, $W$, $F$ such that $(C, F \cap W)$ and $(C \cap W, F)$ form WFSs.
+
+Show that the class of weak equivalences of a model category is closed under retracts.
+This makes it clear that the above definition agrees with the original one due to Quillen.
+
+\paragraph{Cofibrantly generated model categories.}
+A model category is cofibrantly generated if both of its WFSs are.
+
+\begin{prop}[\cite{H}, Theorem 11.3.1 (D.\ M.\ Kan)]
+  Let $M$ be a cocomplete and complete category, $W$ a subcategory and $I$ and $J$ sets of morphisms satisfying the following conditions:
+  \begin{itemize}
+  \item $W$ is closed under retracts;
+  \item $W$ is closed under two-out-of-three;
+  \item both $I$ and $J$ permit the small object argument;
+  \item $\cof(J) \subset \cof(I) \cap W$;
+  \item $\rlp(I) \subset \rlp(J) \cap W$;
+  \item equality holds in one of the last two conditions.
+  \end{itemize}
+  Then $M$ admits a cofibrantly generated model category structure with weak equivalences $W$, generating cofibrations $I$ and generating acyclic cofibrations $J$.
+\end{prop}
+
+\begin{proof}
+  See the cited reference.
+  (Note that Hirschhorn uses ``$I$-cofibration'' to mean $\llp(\rlp(I))$, not $\cof(I)$.
+  This makes no difference since we assume that $I$ permits the small object argument.)
+\end{proof}
+
+In practice we often understand $W$ and $I$ but have no direct way to construct $J$.
+The existence theorem for combinatorial model categories says that it nearly suffices to verify that the intended class of acyclic cofibrations $\cof(I) \cap W$ is closed under transfinite compositions and pushouts.
+Under an accessibility condition on $W$, a set of generating acyclic cofibrations is then guaranteed to exist.
+
+\paragraph{The solution set condition.}
+
+\begin{definition}[\cite{AR}, 0.7; \cite{B}, Definition 1.5]
+  A functor $F : C \to D$ is said to \emph{satisfy the solution set condition} at an object $d \in D$ if there exists a \emph{set} of maps $f_i : d \to Fc_i$ such that every map $f : d \to Fc$ can be expressed as $f = Fg \circ f_i$ for some $i$ and some map $g : c_i \to c$ in $C$.
+  We say that $F$ \emph{satisfies the solution set condition} at a class of objects $A \subset D$ if it satisfies the solution set condition at every object $d \in A$.
+
+  In the present setting we are concerned with a category $C$ and a class $W$ of morphisms of $C$, and we say that $W$ satisfies the solution set condition at a map or a class of maps of $C$ if the inclusion functor of the full subcategory of $C^{[1]}$ determined by $W$ satisfies the corresponding solution set condition.
+\end{definition}
+
+\paragraph{The existence of combinatorial model categories.}
+
+\begin{prop}[\cite{B}, Theorem 1.7 (J. Smith)]
+  Let $M$ be a locally presentable category, $W$ a subcategory and $I$ a set of morphisms of $M$ satisfying the following conditions:
+  \begin{itemize}
+  \item $W$ is closed under retracts;
+  \item $W$ is closed under two-out-of-three;
+  \item $\rlp(I) \subset W$;
+  \item $\cof(I) \cap W$ is closed under transfinite compositions and pushouts;
+  \item $W$ satisfies the solution set condition at $I$.
+  \end{itemize}
+  Then there is a model category structure on $M$ with weak equivalences $W$.
+  It is cofibrantly generated with set of generating cofibrations $I$.
+\end{prop}
+
+\begin{proof}
+  See the cited reference.
+  The strategy is to find a set $J$ such that $\cof(J) = \cof(I) \cap W$.
+  We are then in a position to apply the recognition theorem for cofibrantly generated model categories above.
+\end{proof}
+
+\section{Accessible categories}
+
+The solution set condition is generally not easy to check by hand.
+We'll need to introduce some of the theory of accessible categories, mainly their stability under certain limit-type constructions.
+
+The standard references are \cite{MP} and \cite{AR}.
+Both prove that limits of accessible categories are accessible, but using rather different methods.
+The approach of \cite{AR} appears to be more convenient for formalization.
+For more basic parts of the theory, both references may be useful.
+
+\paragraph{Accessible categories and functors.}
+See \cite{AR}, Definition~2.1 and Definition~2.16.
+
+\paragraph{Raising the index of accessibility.}
+It probably suffices to prove \cite{AR}, Theorem~2.19 and the following Remark.
+This means we do not need the converse direction ``(i) implies (iii)'' of Theorem~2.11 nor the precise definition of the relation $\lambda \triangleleft \mu$; the sufficient condition given by Example~2.13 (3) should be enough.
+
+\paragraph{Accessibly embedded subcategories and the solution set condition.}
+Any accessible functor satisfies the solution set condition.
+This is deduced from the accessibility of comma categories in \cite{AR}, Corollary~2.45, but it also follows easily from the ability to raise the index of accessibility: to check the solution set condition for an accessible functor $F : C \to D$ at an object $d \in D$, choose $\mu$ so that $d$ is $\mu$-compact and $F$ is $\mu$-accessible and then take the set of all maps from $d$ to objects $Fc_i$ where $c_i$ is a $\mu$-compact of $C$.
+However, we will probably need to prove the accessibility of comma categories anyways.
+
+A full subcategory of a category is \emph{accessibly embedded} if it is closed under $\lambda$-filtered colimits for some $\lambda$ (\cite{AR}, Definition~2.35).
+If the full subcategory is also accessible, then this means that the inclusion functor is an accessible functor.
+
+Conclude that we can replace the first and last conditions in Jeff Smith's theorem by ``$W$ is an accessible and accessibly embedded subcategory of the arrow category of $M$''.
+This is the more commonly encountered version of the existence theorem for combinatorial model categories.
+
+\paragraph{Accessibility of comma categories, etc.}
+In order to apply this result in practice, we need an adequate supply of methods for constructing accessible categories.
+
+The first nontrivial result in \cite{AR} on accessibility is the fact that the comma category between two accessible functors is accessible (\cite{AR}, Theorem~2.43).
+We probably will need this, but it would be prudent to make a careful analysis of what is actually needed for the next section before proceeding here.
+
+\section{Olschok model categories}
+
+There is a rather general construction of combinatorial model category structures from simple data due to Olschok (\cite{O}), generalizing ``Cisinski model structures'' (\cite{C06}, \cite{C19}), the model category structures on categories of presheaves whose cofibrations are the monomorphisms.
+As Olschok's construction may be less well-known than the preceding material, we summarize it here.
+
+Let us first suppose that $M$ is a combinatorial model category and let $\Cyl : M \to M$ be a cylinder functor, that is, a functor equipped with natural transformations $i_0$, $i_1 : \id \to M$ and $p : M \to \id$ with $pi_\epsilon = \id$ for $\epsilon = 0$, $1$.
+We say that $\Cyl$ is \emph{compatible\footnote{
+    This is called a \emph{cartesian cylinder} in \cite{O}.
+    The reason is that the corresponding condition in Cisinski's setup (\cite{C06}, D\'efinition~1.3.6) involves a pullback square.
+    However, Olschok's condition is so far removed from the original one that a different term seems to be called for.
+  }
+with the model category structure of $M$} if, informally, $\Cyl$ has the properties which would be expected of the cylinder functor $- \otimes \Delta^1$, if $M$ were a simplicial model category.
+Concretely, this means that $\Cyl$ is a left adjoint which satisfies a few compatibility conditions with the cofibrations and the acyclic cofibrations of $M$ of the usual variety, which in particular imply that $\Cyl$ is a left Quillen functor.
+We say that $\Cyl$ is \emph{compatible with the cofibrations of $M$} if it is compatible with the model category structure with the same cofibrations as $M$ and all maps weak equivalences; concretely this means that $\Cyl$ is a left adjoint and for every cofibration $a \to b$ in $M$, the induced map $(b \amalg b) \amalg_{a \amalg a} \Cyl a \to \Cyl b$ is a cofibration.
+Note that, in fact, these definitions make sense even if $M$ is not yet a full-fledged model category; all we need are two weak factorization systems on $M$.
+To avoid confusion later, we will call the left classes of these WFSs ``cofibrations'' and ``anodyne cofibrations'' (not ``acyclic cofibrations'').
+
+Suppose that $M_0$ is equipped with such structure and $\Cyl : M_0 \to M_0$ is a cylinder functor which is compatible with the cofibrations of $M_0$, but not with the anodyne cofibrations.
+Then there is a minimal way to enlarge the class of anodyne cofibrations to obtain a new structure $M$ with which $\Cyl$ is compatible.
+The reason is that each compatibility axiom involving the anodyne cofibrations has the form ``if $f$ is a cofibration/an anodyne cofibration, then some map obtained from $f$ is an anodyne cofibration'', and assuming that $M_0$ is locally presentable and the original WFSs of $M_0$ are cofibrantly generated, one can show that it is sufficient to extend the generating anodyne cofibrations by all the maps which arise from applying the compatibility axioms to the generating (anodyne) cofibrations finitely many times.
+This construction allows us to describe the eventual desired model category using quite a small amount of data.
+For example, in the case of the \KQ{} model category structure, we may take (\cite{C06}, 2.1.3) $M_0$ to be the category of simplicial sets with cofibrations the monomorphisms, $\Cyl$ the cylinder functor $- \times \Delta^1$, and \emph{no} generating anodyne cofibrations.
+In this case (but not in general) the generating acyclic cofibrations of the \KQ{} model structure are all added via the process described above.
+
+Now we can state Olschok's existence result.
+
+\begin{theorem}[\cite{O}, Theorem~3.16, Lemma~3.25, Lemma~3.28, Lemma~3.30]
+  Let $M$ be a locally presentable category equipped with two cofibrantly generated WFSs (``cofibrations'' and ``anodyne cofibrations'') and let $\Cyl : M \to M$ be a cylinder functor compatible with this structure.
+  Suppose furthermore that every object of $M$ is cofibrant.
+  Then $M$ admits a (unique) combinatorial model category structure described as follows.
+  \begin{itemize}
+  \item The cofibrations are the cofibrations of $M$.
+  \item The fibrant \emph{objects} are the objects $X$ for which $X \to *$ has the right lifting property with respect to the anodyne cofibrations of $M$.
+  \item The weak equivalences are the maps $f : A \to B$ such that for every fibrant object $X$, the induced map on homotopy classes of maps $[B, X] \to [A, X]$ is an isomorphism.
+    (Homotopy classes of maps are defined in terms of the transitive closure of the homotopy relation defined using the cylinder functor in the usual way.)
+  \end{itemize}
+  Furthermore,
+  \begin{itemize}
+  \item The anodyne cofibrations of $M$ are weak equivalences in this model category structure.
+  \item A map $X \to Y$ between fibrant objects is a fibration if and only if it has the right lifting property with respect to all anodyne cofibrations.
+  \item The cylinder functor $\Cyl$ is compatible with this model category structure on $M$.
+  \end{itemize}
+\end{theorem}
+
+\begin{remark}
+  We have adjusted the statement of the hypotheses of \cite{O}, Theorem~3.16 slightly.
+  Essentially, we assume that the anodyne cofibrations of $M$ have already been constructed as the left class of the weak factorization system generated by the set denoted ``$\Lambda(\mathrm{C}, S, I)$'' in \cite{O}.
+  There should be no essential difference in content.
+\end{remark}
+
+\begin{remark}
+  In any model category, a map $A \to B$ between cofibrant objects is a weak equivalence if and only if for every fibrant object $X$, the induced map on homotopy classes of maps $[B, X] \to [A, X]$ is an isomorphism.
+  The idea here is to use this fact in reverse to \emph{define} the weak equivalences.
+  In order for this to work, we need two ingredients.
+  \begin{itemize}
+  \item We need some other way to define homotopies, provided here by the cylinder functor, and it must have some relation to the given cofibrations and anodyne cofibrations.
+  \item We need every object to be cofibrant; otherwise our candidate definition for the weak equivalences would not be appropriate for maps between arbitrary objects.
+  \end{itemize}
+  These requirements account for the hypotheses of the construction.
+\end{remark}
+
+\begin{proof}
+  The strategy is to apply the existence theorem for combinatorial model categories.
+  There are two parts to the proof.
+  One part is model category-theoretic in nature, consisting of verifying that the intersection of the cofibrations with the candidate weak equivalences is closed under transfinite compositions and pushouts and that the resulting model category structure has the other claimed properties.
+  This part appears to be a generalization of the corresponding part of Cisinski's construction \cite{C06}, and the arguments are generally of a standard model category flavor.
+  The other part consists of verifying that the candidate weak equivalences satisfy the solution set condition.
+  For this, Olschok refers to \cite{R}, Proposition~3.8 where ultimately the question is resolved using the accessibility of a certain category constructed from an accessible functorial factorization.
+\end{proof}
+
+I have not yet unwound the proofs to determine exactly what facts about accessible categories are needed in this last step.
+The paper \cite{O} gives specific references (see especially Lemma~2.3 and Theorem~2.12) but it may be possible to ``optimize'' the proof in the sense of reducing the requirements, so that it only relies on the accessibility of comma categories, for example.
+
+\section{The \KQ{} and Joyal model category structures}
+
+The preceding theorem can be applied to give relatively easy constructions of the \KQ{} and Joyal model category structures.
+What exactly this involves depends on what one wants to prove about the result of the construction.
+
+At a minimum, we need to construct the class of cofibrations and prove that it is cofibrantly generated and every object is cofibrant.
+We can prove this in the generality of Eilenberg-Zilber categories (\cite{C19}, \cite{BR}).
+
+We are then in a position to apply the main result of the previous section, after building a set of generating anodyne cofibrations.
+This is sufficient to ``construct'' the \KQ{} and Joyal model categories in a minimal sense.
+However, it would be more satisfying to go on and prove basic facts about them, such as:
+\begin{itemize}
+\item the horn inclusions $\{\,\Lambda^n_i \to \Delta^n \mid 0 \le i \le n\,\}$ form generating acyclic cofibrations for the \KQ{} model category structure, and in particular the fibrant objects are the Kan complexes;
+\item the fibrant objects of the Joyal model category structure are the quasicategories.
+\end{itemize}
+These topics are treated in chapter~3 of \cite{C19}.
+
+\printbibliography
+
+\end{document}
