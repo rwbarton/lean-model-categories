@@ -1,0 +1,8 @@
+[package]
+name = "model-categories"
+version = "0.1"
+lean_version = "master"
+path = "src"
+
+[dependencies]
+lean-category-theory = {git = "https://github.com/semorrison/lean-category-theory", rev = "dacfaa30634091a1573877a112700e5cedf68c9c"}
