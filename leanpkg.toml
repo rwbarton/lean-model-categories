@@ -5,3 +5,5 @@ lean_version = "3.4.1"
 path = "src"
 
 [dependencies]
+mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "f4152da8afed74d98ef0e30694ffac9875456d01"}
+lean-homotopy-theory = {git = "https://github.com/rwbarton/lean-homotopy-theory", rev = "c85773a1f2e8c61455cbd9bda4951676158ce3ef"}

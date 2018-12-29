@@ -1,0 +1,47 @@
+import category_theory.category
+import category_theory.isomorphism
+import category_theory.eq_to_hom
+
+universes u v u' v'
+
+namespace category_theory
+
+variables (C : Type u) [𝒞 : category.{u v} C]
+include 𝒞
+
+/-- A morphism class is any collection of the morphisms of C. -/
+def morphism_class : Type (max u v) := Π ⦃X Y : C⦄, set (X ⟶ Y)
+
+instance : has_inter (morphism_class C) := ⟨λ I J X Y f, I f ∧ J f⟩
+
+instance : has_subset (morphism_class C) := ⟨λ I J, ∀ ⦃X Y⦄ ⦃f : X ⟶ Y⦄, I f → J f⟩
+
+def morphism_class.univ : morphism_class C := λ X Y f, true
+
+def morphism_class.isos : morphism_class C := λ X Y f, nonempty (is_iso f)
+
+variables {C} (I : morphism_class C)
+
+@[extensionality] def morphism_class.ext {I J : morphism_class C}
+  (h : ∀ x y (f : x ⟶ y), I f ↔ J f) : I = J :=
+by ext x y f; apply h
+
+lemma morphism_class.subset_antisymm {I J : morphism_class C} (h : I ⊆ J) (h' : J ⊆ I) :
+  I = J :=
+by ext; tauto
+
+@[simp] lemma of_eq_left {X' X Y} (f : X ⟶ Y) (e : X' = X) : I (eq_to_hom e ≫ f) ↔ I f :=
+by subst e; simp
+
+@[simp] lemma of_eq_right {X Y Y'} (f : X ⟶ Y) (e : Y = Y') : I (f ≫ eq_to_hom e) ↔ I f :=
+by subst e; simp
+
+section
+variables {D : Type u'} [𝒟 : category.{u' v'} D]
+include 𝒟
+
+def morphism_class.preimage (F : C ⥤ D) (I : morphism_class D) : morphism_class C :=
+λ X Y f, I (F.map f)
+end
+
+end category_theory
