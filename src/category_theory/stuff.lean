@@ -77,6 +77,23 @@ end
 
 section
 
+universes u v
+
+variables {C : Type u} [𝒞 : category.{u v} C] {X Y Z : C}
+include 𝒞
+
+-- Making these simp lemmas breaks extend1.lean??
+
+lemma is_iso.hom_inv_id_assoc (f : X ⟶ Y) [is_iso f] (g : X ⟶ Z) : f ≫ inv f ≫ g = g :=
+by rw [←category.assoc, is_iso.hom_inv_id, category.id_comp]
+
+lemma is_iso.inv_hom_id_assoc (f : X ⟶ Y) [is_iso f] (g : Y ⟶ Z) : inv f ≫ f ≫ g = g :=
+by rw [←category.assoc, is_iso.inv_hom_id, category.id_comp]
+
+end
+
+section
+
 universe v
 
 variables {X Y : Type v} (α : X ≅ Y)

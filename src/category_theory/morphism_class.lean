@@ -20,7 +20,13 @@ def morphism_class.univ : morphism_class C := λ X Y f, true
 
 def morphism_class.isos : morphism_class C := λ X Y f, nonempty (is_iso f)
 
-variables {C} (I : morphism_class C)
+variables {C}
+
+lemma morphism_class.inter_subset_left {I J : morphism_class C} : I ∩ J ⊆ I :=
+λ X Y f hf, hf.1
+
+lemma morphism_class.inter_subset_right {I J : morphism_class C} : I ∩ J ⊆ J :=
+λ X Y f hf, hf.2
 
 @[extensionality] def morphism_class.ext {I J : morphism_class C}
   (h : ∀ x y (f : x ⟶ y), I f ↔ J f) : I = J :=
@@ -29,6 +35,8 @@ by ext x y f; apply h
 lemma morphism_class.subset_antisymm {I J : morphism_class C} (h : I ⊆ J) (h' : J ⊆ I) :
   I = J :=
 by ext; tauto
+
+variables (I : morphism_class C)
 
 @[simp] lemma of_eq_left {X' X Y} (f : X ⟶ Y) (e : X' = X) : I (eq_to_hom e ≫ f) ↔ I f :=
 by subst e; simp

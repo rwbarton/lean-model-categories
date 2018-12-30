@@ -29,6 +29,20 @@ def closed_under_coproducts [∀ ι, limits.has_colimits_of_shape (discrete ι) 
 ∀ ⦃ι : Type v⦄ {a b : ι → C} {f : Π i, a i ⟶ b i},
 (∀ i, I (f i)) → I (limits.colim.map (nat_trans.of_function f))
 
+lemma closed_under_pushouts_inter {I J : morphism_class C} :
+  closed_under_pushouts I → closed_under_pushouts J → closed_under_pushouts (I ∩ J) :=
+λ hI hJ a b a' b' f f' i j po ⟨hIf, hJf⟩, ⟨hI po hIf, hJ po hJf⟩
+
+lemma closed_under_tcomp_inter {I J : morphism_class C} :
+  closed_under_tcomp I → closed_under_tcomp J → closed_under_tcomp (I ∩ J) :=
+λ hI hJ γ w c, by exactI
+⟨hI (c.cast morphism_class.inter_subset_left), hJ (c.cast morphism_class.inter_subset_right)⟩
+
+lemma closed_under_coproducts_inter [∀ ι, limits.has_colimits_of_shape (discrete ι) C]
+  {I J : morphism_class C} :
+  closed_under_coproducts I → closed_under_coproducts J → closed_under_coproducts (I ∩ J) :=
+λ hI hJ ι a b f hf, ⟨hI (λ i, (hf i).1), hJ (λ i, (hf i).2)⟩
+
 -- This seems too hard for now
 /-
 lemma coproduct_as_tcomp [limits.has_colimits C] (hI : closed_under_pushouts I)

@@ -1,6 +1,7 @@
 import category_theory.model.category
 import homotopy_theory.topological_spaces.weak_equivalences
 import wfs_top
+import weq_top
 
 namespace model_top
 
@@ -15,9 +16,8 @@ lemma W_is_weq : is_weak_equivalences @is_weak_equivalence :=
 
 /- Unfinished business. -/
 axiom A₁ : rlp serre_I = rlp serre_J ∩ @is_weak_equivalence
-axiom A₂ : llp (rlp serre_J) ⊆ @is_weak_equivalence
 
 def quillen_serre : model_category.{1 0} Top.{0} :=
-model_category.mk' W_is_weq serre_caf serre_acf A₁ A₂
+model_category.mk' W_is_weq serre_caf serre_acf A₁ AC_sub_W
 
 end model_top

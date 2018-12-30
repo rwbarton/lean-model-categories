@@ -21,7 +21,7 @@ include 𝒞
 -- A set of "generating" maps
 parameters {Iι : Type v} {IA IB : Iι → C} (If : Π i, IA i ⟶ IB i)
 
-parameters (K : morphism_class C)
+parameters (K K₁ : morphism_class C)
 
 -- The generating morphisms belong to K
 parameters (hIf : ∀ i, K (If i))
@@ -34,16 +34,16 @@ parameters (hK_pushout : ∀ {A B X Y} {i : A ⟶ X} {f : A ⟶ B} {g : X ⟶ Y}
 parameters (hK_coprod : ∀ {ι : Type v} {A B : ι → C} (f : Π i, A i ⟶ B i),
   (∀ i, K (f i)) → K (colim.map (nat_trans.of_function f))) -- FIXME?
 
--- ... and transfinite compositions.
-parameters (hK_tcomp : ∀ {γ : Type v} [well_order_top γ]
-  (c : transfinite_composition K γ), K c.composition)
+-- ... and transfinite compositions of maps of K belong to K₁
+parameters (hK₁_tcomp : ∀ {γ : Type v} [well_order_top γ]
+  (c : transfinite_composition K γ), K₁ c.composition)
 
 -- Domains of the generating maps are κ-small w.r.t. K, and γ has cofinality ≥ κ
 parameters {κ : cardinal.{v}} (A_small : ∀ ⦃i⦄, κ_small K κ (IA i))
 parameters (γ : Type v) [well_order_top γ]
 parameters (hκ : κ ≤ cofinality γ)
 
--- THEN, any map can be factored into a map from K followed by a map
+-- THEN, any map can be factored into a map from K₁ followed by a map
 -- with the RLP w.r.t. the generating maps If.
 
 def small_object_argument_step {X Y : C} (g : X ⟶ Y) :
@@ -152,10 +152,10 @@ let ⟨c', hc'⟩ :=
 
 -- Repackage the conclusions
 def soa_stmt {X Y : C} (g : X ⟶ Y) :
-  Σ' Z (j : X ⟶ Z) (q : Z ⟶ Y), g = j ≫ q ∧ K j ∧ ∀ i, lp (If i) q :=
+  Σ' Z (j : X ⟶ Z) (q : Z ⟶ Y), g = j ≫ q ∧ K₁ j ∧ ∀ i, lp (If i) q :=
 let ⟨c, g', H, l⟩ := soa2_factor g in
-have Kc : K c.composition := hK_tcomp c,
-⟨c.F.obj ⊤, eq_to_hom H.fst.symm ≫ c.composition, g', H.snd, by rwa of_eq_left K, l⟩
+have K₁c : K₁ c.composition := hK₁_tcomp c,
+⟨c.F.obj ⊤, eq_to_hom H.fst.symm ≫ c.composition, g', H.snd, by rwa of_eq_left K₁, l⟩
 
 end
 end category_theory

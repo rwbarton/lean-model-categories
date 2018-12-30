@@ -58,6 +58,7 @@ begin
   { apply weq.weq_cancel_left (hAC g_ac),
     convert f_w },
   have h_af : AF h, by rw hAF; exact ⟨h_f, h_w⟩,
+  -- TODO: use retract_argument
   rcases caf.lp f_c h_af g (𝟙 b) (by rw gh; simp) with ⟨l, hl₁, hl₂⟩,
   have : retract g f,
   { refine ⟨𝟙 a, 𝟙 a, l, h, _, _, _, _⟩,

@@ -64,10 +64,12 @@ begin
   apply ordinal.typein_enum (o + 1).out.r
 end
 
+lemma closed_t1_inclusion_pushout : closed_under_pushouts @closed_t1_inclusion :=
+λ a b a' b' f f' i j po hf, closed_t1_inclusion_of_pushout po hf
+
 lemma closed_t1_inclusion_coproduct : closed_under_coproducts @closed_t1_inclusion :=
 closed_under_coproducts_of_coproduct @Top_coproduct @Top_coproduct_is_colimit
-  (@closed_under_isos_of_closed_under_pushouts _ _ @closed_t1_inclusion
-     (λ a b a' b' f f' i j po hf, closed_t1_inclusion_of_pushout po hf)) $
+  (closed_under_isos_of_closed_under_pushouts closed_t1_inclusion_pushout) $
 begin
   intros ι a b f hf,
   refine ⟨embedding_sigma_map (λ i, (hf i).1), _, _⟩,
@@ -97,7 +99,7 @@ end
 
 noncomputable def top_soa {X Y : Top.{u}} (g : X ⟶ Y) :
   Σ' Z (j : X ⟶ Z) (q : Z ⟶ Y), g = j ≫ q ∧ K j ∧ rlp If_class q :=
-let ⟨Z, j, q, hg, hj, hq⟩ := soa_stmt If K
+let ⟨Z, j, q, hg, hj, hq⟩ := soa_stmt If K K
   (λ i, ⟨llp_rlp_self (If_class) (If_class.I i), hIf i⟩)
   (λ a b a' b' f i j f' po hf, ⟨llp_pushout _ po hf.1, closed_t1_inclusion_of_pushout po hf.2⟩)
   (λ ι a b f hf,
@@ -173,8 +175,11 @@ open homotopy_theory.cylinder
 instance I.t2_space {X : Top.{0}} [t2_space X] : t2_space (I.obj X : Top) :=
 show t2_space (X × I01), by apply_instance
 
+noncomputable def Js (n : ℕ) : disk n ⟶ I.obj (disk n) :=
+(i 0).app _
+
 def serre_J : morphism_class Top.{0} :=
-If_class disk (λ n, I.obj (disk n)) (λ n, (i 0).app _)
+If_class _ _ Js
 
 lemma serre_acf : is_wfs (llp (rlp serre_J)) (rlp serre_J) :=
 begin

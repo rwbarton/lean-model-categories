@@ -78,6 +78,7 @@ section
 
 variables {J : morphism_class C}
 
+-- TODO: h : I ⊆ J?
 def transfinite_composition.cast (h : ∀ a b (f : a ⟶ b), I f → J f)
   (c : transfinite_composition I γ) : transfinite_composition J γ :=
 ⟨c.F, λ i j hij, h _ _ _ (c.succ i j hij), c.limit⟩

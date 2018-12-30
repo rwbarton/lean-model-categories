@@ -64,6 +64,19 @@ lemma wfs_of_factorization (I : morphism_class M)
   end,
   fact := @h }
 
+lemma retract_argument {L R L' : morphism_class M} (w : is_wfs L R)
+  (H : ∀ {x y} (f : x ⟶ y), ∃ z (g : x ⟶ z) (h : z ⟶ y), L' g ∧ R h ∧ g ≫ h = f) :
+  ∀ {a b} (f : a ⟶ b), L f → ∃ {x' y'} (f' : x' ⟶ y') (r : retract f' f), L' f' :=
+begin
+  intros a b f hf,
+  rcases H f with ⟨z, g, h, hg, hh, hgh⟩,
+  rcases w.lp hf hh g (𝟙 _) (by rw hgh; simp) with ⟨l, hl₁, hl₂⟩,
+  have : retract g f,
+  { refine ⟨𝟙 a, 𝟙 a, l, h, _, _, _, _⟩,
+    all_goals { tidy } },
+  exact ⟨a, z, g, this, hg⟩
+end
+
 open morphism_class
 
 lemma lp_isos_univ {a b x y} (f : a ⟶ b) (g : x ⟶ y) : isos M f → lp f g :=
