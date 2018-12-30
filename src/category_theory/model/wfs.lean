@@ -21,6 +21,9 @@ def llp (R : morphism_class M) : morphism_class M :=
 def rlp (L : morphism_class M) : morphism_class M :=
 λ x y g, ∀ ⦃a b⦄ ⦃f : a ⟶ b⦄, L f → lp f g
 
+lemma llp_anti {R R' : morphism_class M} (h : R ⊆ R') : llp R' ⊆ llp R :=
+λ a b f hf x y g hg, hf (h hg)
+
 structure is_wfs (L R : morphism_class M) : Prop :=
 (llp : L = llp R)
 (rlp : R = rlp L)
