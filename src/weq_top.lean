@@ -4,6 +4,7 @@ import homotopy_theory.formal.i_category.cylinder_object
 import homotopy_theory.formal.i_category.dold
 import wfs_top
 import distrib_stuff
+import weq_stuff
 
 open category_theory category_theory.limits
 open homotopy_theory.topological_spaces homotopy_theory.cylinder homotopy_theory.cofibrations
@@ -14,8 +15,59 @@ namespace model_top
 
 def ctiwe : morphism_class Top := @closed_t1_inclusion ∩ @is_weak_equivalence
 
+lemma lifting_compact (D : gen_lifting_data) (hb : compact_space D.b)
+  {γ : Type} [well_order_top γ] (hγ : cardinal.omega ≤ well_order_top.cofinality γ)
+  (c : transfinite_composition @closed_t1_inclusion γ)
+  (hc : ∀ (j < ⊤), gen_lifting_condition D (c.F.map ⟨⟨(lattice.bot_le : ⊥ ≤ j)⟩⟩)) :
+  gen_lifting_condition D c.composition :=
+begin
+  intros h k s,
+  rcases compact_small_closed_t1_inclusion γ hγ c k with ⟨j, hj, k', hk'⟩,
+  rcases hc j hj h k' _ with ⟨l, m', hl, hm'₀, hm'₁⟩,
+  refine ⟨l, m' ≫ c.F.map ⟨⟨(lattice.le_top : j ≤ ⊤)⟩⟩, hl, _, _⟩,
+  { rw [←category.assoc, hm'₀, hk'] },
+  { rw [←category.assoc, hm'₁, category.assoc, ←c.F.map_comp], refl },
+  { haveI : mono (c.F.map ⟨⟨(lattice.le_top : j ≤ ⊤)⟩⟩) := begin
+      rw Top.mono_iff_injective,
+      exact (closed_embedding_tcomp (c.cast @closed_embedding_of_closed_t1_inclusion) _).1.1
+    end,
+    rw ←cancel_mono (c.F.map ⟨⟨(lattice.le_top : j ≤ ⊤)⟩⟩),
+    rw [category.assoc, hk', category.assoc, ←c.F.map_comp, s], refl }
+end
+
 --- Hovey, 2.4.8
-axiom ctiwe_tcomp : closed_under_tcomp ctiwe
+lemma ctiwe_tcomp : closed_under_tcomp ctiwe :=
+begin
+-- TODO: Induction principle for this style of argument, including restriction step?
+  intros γ Iγ c, resetI,
+  refine ⟨closed_t1_inclusion_tcomp (c.cast morphism_class.inter_subset_left), _⟩,
+  suffices : ∀ j, is_weak_equivalence (c.F.map ⟨⟨(lattice.bot_le : ⊥ ≤ j)⟩⟩),
+  { exact this ⊤ },
+  refine well_founded.fix (well_order_top.wf_lt γ) _,
+  intros j IH,
+  rcases well_order_top.is_bot_or_succ_or_limit j with ⟨_, hj⟩|⟨i, j, hj⟩|⟨_, hj⟩,
+  { change j = ⊥ at hj,
+    subst j,
+    convert is_weak_equivalence_iso (iso.refl _),
+    exact c.F.map_id _ },
+  { have := (c.succ i j hj).2,
+    convert is_weak_equivalence_comp (IH i hj.lt) this,
+    rw ←c.F.map_comp,
+    refl },
+  { let c' := c.below j,
+    change is_weak_equivalence c'.composition,
+    rcases weq_iff with ⟨ι, D, hD, w⟩,
+    rw w,
+    intro i,
+    refine lifting_compact (D i) (hD i) _ (c'.cast morphism_class.inter_subset_left) _,
+    { apply transfinite.cofinality_of_is_limit,
+      rw well_order_top.is_limit_iff,
+      exact hj },
+    { intros j' hj',
+      have := IH j'.val hj',
+      rw w at this,
+      exact this i } }
+end
 
 def sdr : morphism_class Top := λ a b f, is_sdr_inclusion f
 

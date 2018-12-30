@@ -37,6 +37,35 @@ begin
   { exact H }
 end
 
+lemma cofinality_of_is_limit (h : is_limit (⊤ : γ)) : cardinal.omega ≤ cofinality γ :=
+begin
+  -- TODO: split this proof into lemmas (bot ↔ 0, succ ↔ succ)
+  dsimp [cofinality],
+  rw ordinal.omega_le_cof,
+  split,
+  { intro H,
+    have : (⊥ : γ) < ⊤, from bot_lt (λ h', not_bot_limit h' h),
+    replace := (ordinal.typein_lt_typein (<)).mpr this,
+    rw H at this,
+    exact absurd this (not_lt_of_ge (ordinal.zero_le _)) },
+  { intros o ho,
+    have ho' := lt_trans ho (ordinal.typein_lt_type _ _),
+    let j : γ := ordinal.enum (<) o ho',
+    have : j < ⊤,
+    { refine (ordinal.typein_lt_typein (<)).mp _,
+      rwa ordinal.typein_enum },
+    rcases has_succ_of_lt this with ⟨j', hj'⟩,
+    have : ordinal.succ o ≤ ordinal.typein (<) j',
+    { rw ordinal.succ_le,
+      rw ←ordinal.typein_enum (<) ho',
+      exact (ordinal.typein_lt_typein ((<) : γ → γ → Prop)).mpr hj'.lt },
+    refine lt_of_le_of_lt this _,
+    rw ordinal.typein_lt_typein,
+    refine (eq_or_lt_of_le (well_order_top.le_top : j' ≤ ⊤)).resolve_left (λ H, _),
+    subst j',
+    exact not_succ_limit hj' h }
+end
+
 end
 
 section

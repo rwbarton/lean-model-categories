@@ -72,6 +72,14 @@ noncomputable def transfinite_composition.restrict (c : transfinite_composition 
   succ := λ i j h, c.succ _ _ (is_succ_iff.mpr h),
   limit := λ j h,
     (smooth_at_iff_restriction_smooth_at _ _ j).mp (c.limit _ (is_limit_iff.mpr h)) }
+
+noncomputable def transfinite_composition.below (c : transfinite_composition I γ) (j : γ) :
+  transfinite_composition I (Ic j) :=
+{ F := Ic_initial_seg.to_functor ⋙ c.F,
+  succ := λ i j h, c.succ _ _ (is_succ_iff.mp h),
+  limit := λ j h,
+    (smooth_at_iff_restriction_smooth_at _ _ j).mp (c.limit _ (is_limit_iff.mp h)) }
+
 end restrict
 
 section
