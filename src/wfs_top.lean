@@ -1,5 +1,6 @@
 import category_theory.soa2
 import homotopy_theory.topological_spaces.category
+import homotopy_theory.topological_spaces.disk_sphere
 import top_small
 import sigma_stuff
 
@@ -110,4 +111,77 @@ let ⟨Z, j, q, hg, hj, hq⟩ := soa_stmt If K
   (by convert le_refl _; convert ←out_cofinality; exact ordinal.cof_omega) g in
 ⟨Z, j, q, hg, hj, begin rintros a b f ⟨i⟩, exact hq i end⟩
 
+lemma top_wfs : is_wfs (llp (rlp If_class)) (rlp If_class) :=
+wfs_of_factorization _ $
+  λ X Y g, let ⟨Z, j, q, hg, hj, hq⟩ := top_soa g in
+  ⟨Z, j, q, hj.1, hq, hg.symm⟩
+
 end
+
+section serre
+
+instance : compact_space Top.point.{u} :=
+begin
+  constructor,
+  haveI : fintype Top.point.{u} := show fintype punit, by apply_instance,
+  exact compact_of_finite set.finite_univ
+end
+
+instance {n : ℕ} : compact_space (disk n) :=
+begin
+  induction n with n' ih,
+  { change compact_space Top.point,
+    apply_instance },
+  { change compact_space (disk n' × I01),
+    haveI := ih,
+    apply_instance }
+end
+
+instance {n : ℕ} : t2_space (disk n) :=
+begin
+  induction n with n' ih,
+  { change t2_space Top.point,
+    apply_instance },
+  { change t2_space (disk n' × I01),
+    haveI := ih,
+    apply_instance }
+end
+
+def serre_I : morphism_class Top.{0} :=
+If_class sphere_minus_one disk sphere_disk_incl
+
+lemma serre_caf : is_wfs (llp (rlp serre_I)) (rlp serre_I) :=
+begin
+  apply top_wfs,
+  { intro n,
+    constructor,
+    refine (compact_iff_compact_image_of_embedding (Top.embedding_incl _)).mpr _,
+    suffices : compact (disk_sphere_pair n).subset,
+    { convert this,
+      rw set.image_univ,
+      apply set.subtype_val_range },
+    change compact (_ : set (disk n)),
+    exact compact_of_closed (sphere_disk_closed n) },
+  { intro n,
+    refine closed_t1_inclusion_of_closed_embedding_t1 _ (Top.embedding_incl _) _,
+    convert sphere_disk_closed n,
+    apply set.subtype_val_range }
+end
+
+open homotopy_theory.cylinder
+
+instance I.t2_space {X : Top.{0}} [t2_space X] : t2_space (I.obj X : Top) :=
+show t2_space (X × I01), by apply_instance
+
+def serre_J : morphism_class Top.{0} :=
+If_class disk (λ n, I.obj (disk n)) (λ n, (i 0).app _)
+
+lemma serre_acf : is_wfs (llp (rlp serre_J)) (rlp serre_J) :=
+begin
+  apply top_wfs,
+  { apply_instance },
+  { intro n,
+    exact closed_t1_inclusion_of_closed_embedding_t1 _ embedding_i closed_i }
+end
+
+end serre

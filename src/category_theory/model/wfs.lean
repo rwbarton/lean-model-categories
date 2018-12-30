@@ -46,6 +46,21 @@ begin
   { rw [category.assoc, hl₂, ←category.assoc, r.hb, category.id_comp] }
 end
 
+lemma llp_rlp_self (L : morphism_class M) : L ⊆ llp (rlp L) :=
+λ a b f hf x y g hg, hg hf
+
+lemma wfs_of_factorization (I : morphism_class M)
+  (h : ∀ {x y} (f : x ⟶ y), ∃ z (g : x ⟶ z) (h : z ⟶ y), llp (rlp I) g ∧ rlp I h ∧ g ≫ h = f) :
+  is_wfs (llp (rlp I)) (rlp I) :=
+{ llp := rfl,
+  rlp := begin
+    ext x y g,
+    split; intro hg,
+    { intros a b f hf, exact hf hg },
+    { intros a b f hf, exact hg (llp_rlp_self _ hf) }
+  end,
+  fact := @h }
+
 open morphism_class
 
 lemma lp_isos_univ {a b x y} (f : a ⟶ b) (g : x ⟶ y) : isos M f → lp f g :=
@@ -79,9 +94,6 @@ lemma wfs_isos_univ : is_wfs (isos M) (univ M) :=
 ⟨llp_univ.symm, rlp_isos.symm,
  λ x y f, ⟨x, 𝟙 x, f, ⟨infer_instance⟩, trivial, category.id_comp _ f⟩⟩
 
-
-lemma llp_rlp_self (L : morphism_class M) : L ⊆ llp (rlp L) :=
-λ a b f hf x y g hg, hg hf
 
 -- TODO: phrase in terms of is_colimit?
 section
