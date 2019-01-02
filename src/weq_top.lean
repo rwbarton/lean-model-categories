@@ -56,16 +56,16 @@ begin
     refl },
   { let c' := c.below j,
     change is_weak_equivalence c'.composition,
-    rcases weq_iff with ⟨ι, D, hD, w⟩,
-    rw w,
+    rw weq_iff,
     intro i,
-    refine lifting_compact (D i) (hD i) _ (c'.cast morphism_class.inter_subset_left) _,
+    refine lifting_compact (weq_D i) (weq_compact i) _
+      (c'.cast morphism_class.inter_subset_left) _,
     { apply transfinite.cofinality_of_is_limit,
       rw well_order_top.is_limit_iff,
       exact hj },
     { intros j' hj',
       have := IH j'.val hj',
-      rw w at this,
+      rw weq_iff at this,
       exact this i } }
 end
 
@@ -153,17 +153,6 @@ let ⟨Z, j, q, hg, hj, hq⟩ := soa_stmt Js ctisdr ctiwe
   ((ordinal.omega + 1).out.α)
   (by convert le_refl _; convert ←out_cofinality; exact ordinal.cof_omega) g in
 ⟨Z, j, q, hj, begin rintros a b f ⟨i⟩, exact hq i end, hg.symm⟩
-
-lemma {u v} h_is_iso {C : Type u} [category.{u v} C] {a b : C} {f : a ⟶ b} :
-  homotopy_theory.weak_equivalences.is_iso f ↔ nonempty (is_iso f) :=
-begin
-  split,
-  { rintro ⟨i, rfl⟩,
-    exact ⟨infer_instance⟩ },
-  { rintro ⟨i⟩,
-    resetI,
-    exact ⟨iso.of_is_iso f, rfl⟩ }
-end
 
 lemma π_induced_congr (n : ℕ) {X Y : Top} {f g : X ⟶ Y} {x : X} (e : f = g) :
   π_induced n x f ≫ eq_to_hom (by congr; exact Top.hom_congr e x) = π_induced n x g :=
