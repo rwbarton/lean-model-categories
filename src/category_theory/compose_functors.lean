@@ -3,12 +3,12 @@ import category_theory.stuff
 import category_theory.whiskering
 import category_theory.equivalence
 
-universes u₁ v₁ u₂ v₂ u₃ v₃
+universes v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace category_theory
 
-variables {C : Type u₁} [𝒞 : category.{u₁ v₁} C]
-          {D : Type u₂} [𝒟 : category.{u₂ v₂} D]
+variables {C : Type u₁} [𝒞 : category.{v₁} C]
+          {D : Type u₂} [𝒟 : category.{v₂} D]
 include 𝒞 𝒟
 
 @[simp] lemma left_unitor_hom_app (F : C ⥤ D) {X} :
@@ -16,7 +16,7 @@ include 𝒞 𝒟
 rfl
 
 variables
-          {E : Type u₃} [ℰ : category.{u₃ v₃} E]
+          {E : Type u₃} [ℰ : category.{v₃} E]
 include ℰ
 
 def precompose : (C ⥤ D) ⥤ ((D ⥤ E) ⥤ (C ⥤ E)) :=

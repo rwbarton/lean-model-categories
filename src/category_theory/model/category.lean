@@ -3,12 +3,12 @@ import category_theory.model.wfs
 import category_theory.model.weak_equivalences
 import category_theory.retract
 
-universes u v
+universes v u
 
 namespace category_theory
 open category_theory.limits
 
-variables {M : Type u} [𝓜 : category.{u v} M]
+variables {M : Type u} [𝓜 : category.{v} M]
 include 𝓜
 
 structure is_model_category (W C F : morphism_class M) : Prop :=
@@ -20,7 +20,7 @@ structure is_model_category (W C F : morphism_class M) : Prop :=
 -- https://ncatlab.org/nlab/show/model+category#ClosureOfMorphisms
 
 omit 𝓜
-class model_category (M : Type u) extends category.{u v} M :=
+class model_category (M : Type u) extends category.{v} M :=
 (complete : has_limits M)
 (cocomplete : has_colimits M)
 (W C F : morphism_class M)
@@ -69,13 +69,13 @@ end
 def model_category.mk' [has_limits M] [has_colimits M] {W C AF AC F : morphism_class M}
   (weq : is_weak_equivalences W)
   (caf : is_wfs C AF) (acf : is_wfs AC F)
-  (hAF : AF = F ∩ W) (hAC : AC ⊆ W) : model_category.{u v} M :=
+  (hAF : AF = F ∩ W) (hAC : AC ⊆ W) : model_category M :=
 { complete := by apply_instance,
   cocomplete := by apply_instance,
   W := W,
   C := C,
   F := F,
   h := by apply is_model_category.mk'; apply_assumption,
-  to_category := (infer_instance : category.{u v} M) }
+  to_category := (infer_instance : category M) }
 
 end category_theory

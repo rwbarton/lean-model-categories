@@ -4,7 +4,7 @@ import category_theory.induced2
 noncomputable theory
 local attribute [instance] classical.dec
 
-universes u v
+universes v u
 
 namespace category_theory.transfinite
 namespace extend1
@@ -13,7 +13,7 @@ section
 open category_theory category_theory.functor well_order_top
 
 -- General parameters for constructing a transfinite composition
-parameters {C : Type u} [𝒞 : category.{u v} C]
+parameters {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 parameters {I : morphism_class C}
 parameters {γ : Type v} [well_order_top γ]

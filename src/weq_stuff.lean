@@ -118,7 +118,7 @@ end
 
 local notation `is_iso'` := homotopy_theory.weak_equivalences.is_iso
 
-lemma {u v} h_is_iso {C : Type u} [category.{u v} C] {a b : C} {f : a ⟶ b} :
+lemma {v u} h_is_iso {C : Type u} [category.{v} C] {a b : C} {f : a ⟶ b} :
   is_iso' f ↔ nonempty (is_iso f) :=
 begin
   split,
@@ -255,8 +255,8 @@ begin
       exact quotient.sound h },
     { rintros H ⟨f₁⟩ ⟨f₂⟩ h,
       replace h : homotopy_theory.cylinder.homotopic (f₁ ≫ g) (f₂ ≫ g) := quotient.exact h,
-      rw ←homotopy_theory.cylinder.homotopic_rel_initial.{1 0} Ii_initial (! *) at h,
-      rw ←homotopic_rel_iff_cylinder (all_objects_cofibrant.cofibrant.{1 0} Top.point) at h,
+      rw ←homotopy_theory.cylinder.homotopic_rel_initial.{0 1} Ii_initial (! *) at h,
+      rw ←homotopic_rel_iff_cylinder (all_objects_cofibrant.cofibrant.{0 1} Top.point) at h,
       have h' := H f₁ f₂ (initial.uniqueness _ _) h,
       rw [homotopic_rel_iff_cylinder, homotopy_theory.cylinder.homotopic_rel_initial Ii_initial] at h',
       exact quotient.sound h' } },

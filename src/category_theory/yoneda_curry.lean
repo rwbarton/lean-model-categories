@@ -4,16 +4,16 @@ import category_theory.whiskering
 
 namespace category_theory
 
-universes u₁ v₁ u₂
+universes v₁ u₁ u₂
 
 section
 
-variables (C : Type u₁) [𝒞 : category.{u₁ v₁} C]
+variables (C : Type u₁) [𝒞 : category.{v₁} C]
 include 𝒞
 
 --- The functor c ↦ (X ↦ ↑X(c)), where ↑ denotes ulift.
 def yoneda_evaluation' : Cᵒᵖ ⥤ ((Cᵒᵖ ⥤ Type v₁) ⥤ Type (max u₁ v₁)) :=
-evaluation (Cᵒᵖ) (Type v₁) ⋙ (whiskering_right _ _ _).obj (ulift_functor.{v₁ u₁})
+evaluation (Cᵒᵖ) (Type v₁) ⋙ (whiskering_right _ _ _).obj (ulift_functor.{u₁ v₁})
 
 --- The functor c ↦ (X ↦ Hom(yc, X)).
 def yoneda_pairing' : Cᵒᵖ ⥤ ((Cᵒᵖ ⥤ Type v₁) ⥤ Type (max u₁ v₁)) :=

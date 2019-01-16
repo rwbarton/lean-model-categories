@@ -3,7 +3,7 @@ import category_theory.transfinite.construction
 
 noncomputable theory
 
-universes u v
+universes v u
 
 open well_order_top
 
@@ -11,7 +11,7 @@ namespace category_theory
 namespace transfinite
 section
 
-parameters {C : Type u} [𝒞 : category.{u v} C] [limits.has_colimits C]
+parameters {C : Type u} [𝒞 : category.{v} C] [limits.has_colimits C]
 include 𝒞
 
 -- A set of "generating" maps

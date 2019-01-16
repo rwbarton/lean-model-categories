@@ -3,13 +3,13 @@ import category_theory.presheaf
 import category_theory.yoneda
 import category_theory.stuff
 
-universes u v w
+universes v u w
 
 namespace category_theory
 
 section
 
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 variables {ι : Type w} (A : ι → C)

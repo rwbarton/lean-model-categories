@@ -1,14 +1,14 @@
-import category_theory.morphism_class
+import category_theory.morphism_class_closure
 import category_theory.retract
 import category_theory.colimits
 import category_theory.transfinite.composition
 import logic.crec
 
-universes u v
+universes v u
 
 namespace category_theory
 
-variables {M : Type u} [𝓜 : category.{u v} M]
+variables {M : Type u} [𝓜 : category.{v} M]
 include 𝓜
 
 def lp {a b x y : M} (f : a ⟶ b) (g : x ⟶ y) : Prop :=

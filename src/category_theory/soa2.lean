@@ -10,12 +10,12 @@ noncomputable theory
 open category_theory category_theory.functor category_theory.limits category_theory.transfinite
 open well_order_top
 
-universes u v
+universes v u
 
 namespace category_theory
 section
 
-parameters {C : Type u} [𝒞 : category.{u v} C] [has_colimits C] [has_pushouts.{u v} C]
+parameters {C : Type u} [𝒞 : category.{v} C] [has_colimits C] [has_pushouts.{v} C]
 include 𝒞
 
 -- A set of "generating" maps
@@ -129,7 +129,7 @@ let ⟨c', hc'⟩ :=
    have := congr_arg (λ Z, over.forget.obj Z) hc',
    refine ⟨this, _⟩,
    dsimp [c, transfinite_composition.composition, transfinite_composition.map'],
-   rw [category.assoc, over.over_w],
+   rw [category.assoc, over.w],
    apply category_theory.over.of_eq hc'.symm
  end,
  λ i h k s,
@@ -137,7 +137,7 @@ let ⟨c', hc'⟩ :=
      ⟨j', hj'⟩ := has_succ_of_lt hj,
      ⟨l, hl₁, hl₂⟩ := (c'.succ j j' hj').2 h' k $ begin
        rw [←s, ←hh', category.assoc],
-       congr, apply over.over_w
+       congr, apply over.w
      end in
  ⟨l ≫ c.F.map ⟨⟨lattice.le_top⟩⟩,
   begin
@@ -147,7 +147,7 @@ let ⟨c', hc'⟩ :=
   begin
     rw category.assoc,
     convert hl₂,
-    apply over.over_w
+    apply over.w
   end⟩⟩
 
 -- Repackage the conclusions

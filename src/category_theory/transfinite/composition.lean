@@ -7,7 +7,7 @@ import order.well_order_top
 import category_theory.stuff
 import category_theory.limit_stuff
 
-universes u u' v
+universes v u u'
 
 namespace category_theory
 open category_theory.limits
@@ -23,7 +23,7 @@ def cocone_at (j : γ) : cocone (full_subcategory_inclusion (λ i, i < j)) :=
 
 @[simp] lemma cocone_at_X (j : γ) : (cocone_at j).X = j := rfl
 
-variables {C : Type u} [category.{u v} C]
+variables {C : Type u} [category.{v} C]
 
 def smooth_at (F : γ ⥤ C) (j : γ) : Prop :=
 nonempty (is_colimit (F.map_cocone (cocone_at j)))
@@ -45,7 +45,7 @@ end
 end smooth_at
 
 
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 variables (I : morphism_class C)
@@ -61,7 +61,7 @@ structure transfinite_composition :=
 variables {I γ}
 
 def transfinite_composition.composition
-  (c : transfinite_composition.{u v} I γ) : c.F.obj ⊥ ⟶ c.F.obj ⊤ :=
+  (c : transfinite_composition I γ) : c.F.obj ⊥ ⟶ c.F.obj ⊤ :=
 c.F.map ⟨⟨lattice.le_top⟩⟩
 
 section restrict
@@ -95,7 +95,7 @@ end
 
 section
 
-variables {D : Type u'} [𝒟 : category.{u' v} D]
+variables {D : Type u'} [𝒟 : category.{v} D]
 include 𝒟
 
 variables {J : morphism_class D}

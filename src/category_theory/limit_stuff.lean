@@ -5,7 +5,7 @@ import category_theory.equivalence
 import category_theory.compose_functors
 import category_theory.discrete_category
 
-universes u v
+universes v u
 
 namespace category_theory
 
@@ -13,7 +13,7 @@ open category_theory.functor
 open category_theory.limits
 
 variables {J K : Type v} [small_category J] [small_category K]
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 section

@@ -1,7 +1,7 @@
 import category_theory.transfinite.composition
 import set_theory.cofinality
 
-universes u v
+universes v u
 
 namespace category_theory.transfinite
 open category_theory
@@ -70,7 +70,7 @@ end
 
 section
 
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 -- X is κ-small with respect to I if any map from X to the end of a

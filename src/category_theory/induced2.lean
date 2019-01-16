@@ -1,16 +1,16 @@
 import category_theory.fully_faithful
 import category_theory.full_subcategory
 
-universes u₁ u₂ v
+universes v u₁ u₂
 
 namespace category_theory
 
-variables {C : Type u₁} {D : Type u₂} [𝒟 : category.{u₂ v} D] (f : C → D)
+variables {C : Type u₁} {D : Type u₂} [𝒟 : category.{v} D] (f : C → D)
 include 𝒟 f
 
 def induced_category : Type u₁ := C
 
-instance induced_category.category : category.{u₁ v} (induced_category f) :=
+instance induced_category.category : category.{v} (induced_category f) :=
 { hom := λ x y, f x ⟶ f y,
   id := λ x, 𝟙 _,
   comp := λ _ _ _ f g, f ≫ g }

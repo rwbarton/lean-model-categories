@@ -5,12 +5,6 @@ import category_theory.limits.preserves
 import set_theory.cardinal
 
 section
-universes u v
-lemma nonempty.map {α : Type u} {β : Type v} (f : α → β) : nonempty α → nonempty β
-| ⟨a⟩ := ⟨f a⟩
-end
-
-section
 universes u
 lemma cardinal.mk_range_le {α β : Type u} (f : α → β) :
   cardinal.mk (set.range f) ≤ cardinal.mk α :=
@@ -56,9 +50,9 @@ namespace category_theory
 
 section
 
-universes u v
+universes v u
 
-variables {C : Type u} [𝒞 : category.{u v} C] {X Y : C}
+variables {C : Type u} [𝒞 : category.{v} C] {X Y : C}
 include 𝒞
 
 def iso.of_is_iso (f : X ⟶ Y) [is_iso f] : X ≅ Y :=
@@ -77,9 +71,9 @@ end
 
 section
 
-universes u v
+universes v u
 
-variables {C : Type u} [𝒞 : category.{u v} C] {X Y Z : C}
+variables {C : Type u} [𝒞 : category.{v} C] {X Y Z : C}
 include 𝒞
 
 -- Making these simp lemmas breaks extend1.lean??
@@ -137,9 +131,9 @@ end
 
 namespace nat_iso
 
-universes u₁ u₂ v₁ v₂
+universes v₁ v₂ u₁ u₂
 
-variables {C : Type u₁} [𝒞 : category.{u₁ v₁} C] {D : Type u₂} [𝒟 : category.{u₂ v₂} D]
+variables {C : Type u₁} [𝒞 : category.{v₁} C] {D : Type u₂} [𝒟 : category.{v₂} D]
 include 𝒞 𝒟
 
 variables {F G : C ⥤ D}
@@ -153,11 +147,11 @@ end nat_iso
 
 section whisker
 
-universes u₁ v₁ u₂ v₂ u₃ v₃ u₄ v₄
+universes v₁ v₂ v₃ u₁ u₂ u₃
 
-variables {C : Type u₁} [𝒞 : category.{u₁ v₁} C]
-          {D : Type u₂} [𝒟 : category.{u₂ v₂} D]
-          {E : Type u₃} [ℰ : category.{u₃ v₃} E]
+variables {C : Type u₁} [𝒞 : category.{v₁} C]
+          {D : Type u₂} [𝒟 : category.{v₂} D]
+          {E : Type u₃} [ℰ : category.{v₃} E]
 include 𝒞 𝒟 ℰ
 
 def whisker_left_iso (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) : (F ⋙ G) ≅ (F ⋙ H) :=
@@ -171,10 +165,10 @@ end whisker
 
 namespace limits
 
-universes u u' v
+universes v u u'
 
 variables {J : Type v} [small_category J]
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 section
@@ -216,7 +210,7 @@ is_colimit.of_hom_iso
      rw ←category.assoc, congr, apply (nat_iso.app α X).inv_hom_id_assoc,
    end)
 
-variables {D : Type u'} [𝒟 : category.{u' v} D]
+variables {D : Type u'} [𝒟 : category.{v} D]
 include 𝒟
 
 variables (t : cocone F)
@@ -263,9 +257,9 @@ end limits
 
 section ff
 
-universes u₁ v₁ u₂ v₂
+universes v₁ v₂ u₁ u₂
 
-variables {C : Type u₁} [𝒞 : category.{u₁ v₁} C] {D : Type u₂} [𝒟 : category.{u₂ v₂} D]
+variables {C : Type u₁} [𝒞 : category.{v₁} C] {D : Type u₂} [𝒟 : category.{v₂} D]
 include 𝒞 𝒟
 
 /-

@@ -8,12 +8,12 @@ local attribute [instance] classical.dec
 open category_theory category_theory.functor
 open well_order_top
 
-universes u v
+universes v u
 
 namespace category_theory.transfinite
 section
 
-parameters {C : Type u} [𝒞 : category.{u v} C] [limits.has_colimits C]
+parameters {C : Type u} [𝒞 : category.{v} C] [limits.has_colimits C]
 include 𝒞
 
 parameters {I : morphism_class C}

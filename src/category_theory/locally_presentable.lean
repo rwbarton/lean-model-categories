@@ -5,7 +5,7 @@ import category_theory.limits.functor_category
 import category_theory.limits.types
 import category_theory.presheaf
 
-universes u v
+universes v u
 
 namespace category_theory
 open category_theory.functor
@@ -14,7 +14,7 @@ variables (κ : regular_cardinal.{v})
 
 section
 
-variables (C : Type u) [𝒞 : category.{u v} C] [limits.has_colimits.{u v} C]
+variables (C : Type u) [𝒞 : category.{v} C] [limits.has_colimits.{v} C]
 include 𝒞
 
 include κ

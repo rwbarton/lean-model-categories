@@ -7,30 +7,13 @@ local attribute [instance] classical.dec
 
 open category_theory category_theory.functor well_order_top
 
-universes u v
+universes v u
 
 
--- TODO: move to limits.over
-namespace category_theory.limits
-
-variables {C : Type u} [𝒞 : category.{u v} C]
-include 𝒞
-
-instance over.has_colimits [limits.has_colimits C] {X : C} : limits.has_colimits (over X) :=
-λ J 𝒥 F, by exactI { cocone := over.colimit F, is_colimit := over.is_colimit F }
-
-instance over.forget_preserves_colimits [limits.has_colimits C] {X : C} :
-  preserves_colimits (over.forget : over X ⥤ C) :=
-λ J 𝒥 F, by exactI preserves_colimit_of_preserves_colimit_cocone (colimit.is_colimit _)
-  (is_colimit.of_iso_colimit (colimit.is_colimit (F ⋙ over.forget))
-     begin ext, swap, refl, simp, dsimp, simp, refl end)
-
-end category_theory.limits
-
-
+-- TODO: move to limits.over?
 namespace category_theory.over
 
-lemma of_eq {C : Type u} [category.{u v} C] {Z : C} {X Y : over Z} (h : X = Y) :
+lemma of_eq {C : Type u} [category.{v} C] {Z : C} {X Y : over Z} (h : X = Y) :
   X.hom = eq_to_hom (by cases h; refl) ≫ Y.hom :=
 by cases h; simp
 
@@ -39,7 +22,7 @@ end category_theory.over
 namespace category_theory.transfinite
 section
 
-parameters {C : Type u} [𝒞 : category.{u v} C] [limits.has_colimits C]
+parameters {C : Type u} [𝒞 : category.{v} C] [limits.has_colimits C]
 include 𝒞
 
 parameters {I : morphism_class C}
@@ -64,7 +47,7 @@ let ⟨c', hc'⟩ :=
    have := congr_arg (λ Z, over.forget.obj Z) hc',
    refine ⟨this, _⟩,
    dsimp [transfinite_composition.composition, transfinite_composition.map],
-   rw [category.assoc, over.over_w],
+   rw [category.assoc, over.w],
    apply category_theory.over.of_eq hc'.symm
  end⟩
 

@@ -7,8 +7,8 @@ import category_theory.stuff
 
 namespace category_theory
 
-universes u v u' v'
-variables {C : Type u} [𝒞 : category.{u v} C]
+universes v v' u u'
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 --- `retract f f'` is a diagram exhibiting f' as a retract of f.
@@ -30,7 +30,7 @@ begin
     simpa [is_iso.inv_hom_id_assoc] using r.hb }
 end
 
-variables {D : Type u'} [𝒟 : category.{u' v'} D]
+variables {D : Type u'} [𝒟 : category.{v'} D]
 include 𝒟
 
 def functor.on_retract (F : C ⥤ D) {a b a' b' : C} {f : a ⟶ b} {f' : a' ⟶ b'} (r : retract f f') :

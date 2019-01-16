@@ -2,11 +2,11 @@ import category_theory.transfinite.composition
 import category_theory.colimits
 import category_theory.colimit_lemmas
 
-universes u v
+universes v u
 
 namespace category_theory
 
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 variables (I : morphism_class C)

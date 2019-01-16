@@ -4,12 +4,12 @@ import category_theory.eq_to_hom
 
 -- TODO: Most of this is now redundant
 
-universes u v u' v'
+universes v v' u u'
 
 namespace category_theory
 namespace functor
 
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 @[simp] def change_hom (a b : C) {a' b' : C} (ea : a' = a) (eb : b' = b) (f : a ⟶ b) : a' ⟶ b' :=
@@ -20,7 +20,7 @@ eq_to_hom ea ≫ f ≫ eq_to_hom eb.symm
 by cases p; cases q; simp
 
 
-variables {D : Type u'} [𝒟 : category.{u' v'} D]
+variables {D : Type u'} [𝒟 : category.{v'} D]
 include 𝒟
 
 lemma eq_obj {F G : C ⥤ D} (h : F = G) (X) : F.obj X = G.obj X :=

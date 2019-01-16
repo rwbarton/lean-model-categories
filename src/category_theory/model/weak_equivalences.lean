@@ -1,10 +1,10 @@
 import category_theory.morphism_class
 
-universes u v
+universes v u
 
 namespace category_theory
 
-variables {M : Type u} [𝓜 : category.{u v} M]
+variables {M : Type u} [𝓜 : category.{v} M]
 include 𝓜
 
 structure is_weak_equivalences (W : morphism_class M) : Prop :=

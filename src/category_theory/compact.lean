@@ -7,7 +7,7 @@ import category_theory.limits.types
 import category_theory.stuff
 import category_theory.yoneda_curry
 
-universes u v
+universes v u
 
 namespace category_theory
 
@@ -16,7 +16,7 @@ include κ
 
 section
 
-variables {C : Type u} [𝒞 : category.{u v} C]
+variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
 def is_kappa_compact (A : C) : Prop :=

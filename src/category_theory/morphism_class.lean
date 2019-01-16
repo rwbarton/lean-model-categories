@@ -2,11 +2,11 @@ import category_theory.category
 import category_theory.isomorphism
 import category_theory.eq_to_hom
 
-universes u v u' v'
+universes v v' u u'
 
 namespace category_theory
 
-variables (C : Type u) [𝒞 : category.{u v} C]
+variables (C : Type u) [𝒞 : category.{v} C]
 include 𝒞
 
 /-- A morphism class is any collection of the morphisms of C. -/
@@ -45,7 +45,7 @@ by subst e; simp
 by subst e; simp
 
 section
-variables {D : Type u'} [𝒟 : category.{u' v'} D]
+variables {D : Type u'} [𝒟 : category.{v'} D]
 include 𝒟
 
 def morphism_class.preimage (F : C ⥤ D) (I : morphism_class D) : morphism_class C :=
