@@ -1,4 +1,4 @@
-import analysis.topology.continuity
+import topology.continuity
 import category_theory.transfinite.composition
 import category_theory.morphism_class_closure
 import homotopy_theory.topological_spaces.category

@@ -1,9 +1,9 @@
 [package]
 name = "lean-model-categories"
 version = "0.1"
-lean_version = "3.4.1"
+lean_version = "3.4.2"
 path = "src"
 
 [dependencies]
-mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "0c710160f5c7012054bdbbd7b44df3574a2b14e4"}
-lean-homotopy-theory = {git = "https://github.com/rwbarton/lean-homotopy-theory", rev = "08d77a931a7c2fd518f6d72272c34025a4b1f119"}
+mathlib = {git = "https://github.com/leanprover/mathlib", rev = "3dc9935aad61ce539c7a0b98f3c20f41607ae159"}
+lean-homotopy-theory = {git = "https://github.com/rwbarton/lean-homotopy-theory", rev = "a38c8bdf8093435a1ee9bbd85e24348b85069e42"}
