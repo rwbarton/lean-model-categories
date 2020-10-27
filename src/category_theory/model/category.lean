@@ -19,6 +19,26 @@ structure is_model_category (W C F : morphism_class M) : Prop :=
 -- TODO: Show that it follows that W is closed under retracts. See
 -- https://ncatlab.org/nlab/show/model+category#ClosureOfMorphisms
 
+lemma is_model_category.weq_of_weq_retract_fib { W C F : morphism_class M } ( h : is_model_category W C F )
+ {a b a' b'} {f : a ⟶ b} {f' : a' ⟶ b'} (r : retract f f') (hf : W f) (hf': F f') : W f' := begin
+   rcases h.acf.fact f with ⟨ c, α, β, WCα, Fβ, f_fact ⟩,
+   rw h.acf.llp at WCα,
+   choose l hl using WCα hf' r.ra (β ≫ r.rb) (by { rw [← category.assoc, f_fact], exact r.hr }), 
+   have rβf' : retract β f' := {
+     ia := (r.ia) ≫ α,
+     ra := l,
+     ib := r.ib,
+     rb := r.rb,
+     ha := by { simp, rw hl.1, exact r.ha },
+     hb := r.hb,
+     hi := by { rw [category.assoc, f_fact], exact r.hi },
+     hr := hl.2,
+   },
+   rw ← h.acf.llp at WCα,
+   rw ← f_fact at hf,
+   --exact is_wfs.retract ⟨ Fβ, h.weq.weq_cancel_left WCα.2 hf ⟩,
+end
+
 omit 𝓜
 class model_category (M : Type u) extends category.{v} M :=
 (complete : has_limits M)

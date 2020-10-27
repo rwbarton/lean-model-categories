@@ -11,7 +11,7 @@ universes v v' u u'
 variables {C : Type u} [𝒞 : category.{v} C]
 include 𝒞
 
---- `retract f f'` is a diagram exhibiting f' as a retract of f.
+-- `retract f f'` is a diagram exhibiting f' as a retract of f.
 structure retract {a b a' b' : C} (f : a ⟶ b) (f' : a' ⟶ b') : Type v :=
 (ia : a' ⟶ a) (ra : a ⟶ a')
 (ib : b' ⟶ b) (rb : b ⟶ b')

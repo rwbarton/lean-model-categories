@@ -2,6 +2,7 @@ import category_theory.morphism_class_closure
 import category_theory.retract
 import category_theory.colimits
 import category_theory.transfinite.composition
+import category_theory.opposites
 import logic.crec
 
 universes v u
@@ -30,6 +31,21 @@ structure is_wfs (L R : morphism_class M) : Prop :=
 (fact : ∀ {x y} (f : x ⟶ y), ∃ z (g : x ⟶ z) (h : z ⟶ y),
   L g ∧ R h ∧ g ≫ h = f)
 
+lemma llp.op (R : morphism_class M) : morphism_class.op M (llp R) = rlp (morphism_class.op M R) :=
+begin
+  unfold morphism_class.op,
+  ext,
+  split,
+  intros g p q d e f g h,
+end 
+
+lemma is_wfs.op { L R : morphism_class M } ( w: is_wfs L R ) : @is_wfs Mᵒᵖ infer_instance (morphism_class.op M R) (morphism_class.op M L) := 
+{
+  llp := by { unfold morphism_class.op, tidy; rw w.rlp at *,},
+  rlp := by { sorry },
+  fact := by { sorry }
+}
+
 lemma is_wfs.lp {L R : morphism_class M} (w : is_wfs L R)
   {a b x y} {f : a ⟶ b} {g : x ⟶ y} (hf : L f) (hg : R g) : lp f g :=
 begin
@@ -47,7 +63,7 @@ begin
   refine ⟨r.ib ≫ l, _, _⟩,
   { rw [←category.assoc, ←r.hi, category.assoc, hl₁, ←category.assoc, r.ha, category.id_comp] },
   { rw [category.assoc, hl₂, ←category.assoc, r.hb, category.id_comp] }
-end
+end    
 
 lemma llp_rlp_self (L : morphism_class M) : L ⊆ llp (rlp L) :=
 λ a b f hf x y g hg, hg hf

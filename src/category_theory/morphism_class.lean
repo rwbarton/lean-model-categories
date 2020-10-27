@@ -1,6 +1,7 @@
 import category_theory.category
 import category_theory.isomorphism
 import category_theory.eq_to_hom
+import category_theory.opposites
 
 universes v v' u u'
 
@@ -15,6 +16,8 @@ def morphism_class : Type (max u v) := Π ⦃X Y : C⦄, set (X ⟶ Y)
 instance : has_inter (morphism_class C) := ⟨λ I J X Y f, I f ∧ J f⟩
 
 instance : has_subset (morphism_class C) := ⟨λ I J, ∀ ⦃X Y⦄ ⦃f : X ⟶ Y⦄, I f → J f⟩
+
+def morphism_class.op (I : morphism_class C) : morphism_class Cᵒᵖ := λ Y X f, I f
 
 def morphism_class.univ : morphism_class C := λ X Y f, true
 
