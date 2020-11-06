@@ -31,20 +31,6 @@ structure is_wfs (L R : morphism_class M) : Prop :=
 (fact : ∀ {x y} (f : x ⟶ y), ∃ z (g : x ⟶ z) (h : z ⟶ y),
   L g ∧ R h ∧ g ≫ h = f)
 
-lemma llp.op (R : morphism_class M) : morphism_class.op M (llp R) = rlp (morphism_class.op M R) :=
-begin
-  unfold morphism_class.op,
-  ext,
-  split,
-  intros g p q d e f g h,
-end 
-
-lemma is_wfs.op { L R : morphism_class M } ( w: is_wfs L R ) : @is_wfs Mᵒᵖ infer_instance (morphism_class.op M R) (morphism_class.op M L) := 
-{
-  llp := by { unfold morphism_class.op, tidy; rw w.rlp at *,},
-  rlp := by { sorry },
-  fact := by { sorry }
-}
 
 lemma is_wfs.lp {L R : morphism_class M} (w : is_wfs L R)
   {a b x y} {f : a ⟶ b} {g : x ⟶ y} (hf : L f) (hg : R g) : lp f g :=
@@ -53,7 +39,7 @@ begin
   exact hf hg
 end
 
-lemma is_wfs.retract {L R : morphism_class M} (w : is_wfs L R)
+lemma is_wfs.retract_left {L R : morphism_class M} (w : is_wfs L R)
   {a b a' b'} {f : a ⟶ b} {f' : a' ⟶ b'} (r : retract f f') (hf : L f) : L f' :=
 begin
   rw w.llp,
@@ -64,6 +50,18 @@ begin
   { rw [←category.assoc, ←r.hi, category.assoc, hl₁, ←category.assoc, r.ha, category.id_comp] },
   { rw [category.assoc, hl₂, ←category.assoc, r.hb, category.id_comp] }
 end    
+
+lemma is_wfs.retract_right {L R :morphism_class M } (w : is_wfs L R)
+{a b a' b'} {f : a ⟶ b} {f' : a' ⟶ b'} (r : retract f f') (hf : R f) : R f' :=
+begin
+  rw w.rlp,
+  intros x y g hg h k s,
+  rcases w.lp hg hf (h ≫ r.ia) (k ≫ r.ib) 
+    (by rw [← category.assoc, ←s, category.assoc, category.assoc, r.hi]) with ⟨l, hl₁, hl₂⟩,
+  refine ⟨l ≫ r.ra, _, _⟩,
+  { rw [←category.assoc, hl₁, category.assoc, r.ha, category.comp_id] },
+  { rw [category.assoc, r.hr, ←category.assoc, hl₂, category.assoc, r.hb, category.comp_id] }
+end
 
 lemma llp_rlp_self (L : morphism_class M) : L ⊆ llp (rlp L) :=
 λ a b f hf x y g hg, hg hf

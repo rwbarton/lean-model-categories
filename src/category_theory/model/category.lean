@@ -36,7 +36,50 @@ lemma is_model_category.weq_of_weq_retract_fib { W C F : morphism_class M } ( h 
    },
    rw ← h.acf.llp at WCα,
    rw ← f_fact at hf,
-   --exact is_wfs.retract ⟨ Fβ, h.weq.weq_cancel_left WCα.2 hf ⟩,
+   exact (is_wfs.retract_right h.caf rβf' ⟨ Fβ, h.weq.weq_cancel_left WCα.2 hf ⟩).2
+end
+
+#check @Is_pushout.uniqueness
+
+lemma is_model_category.weq_of_weq_retract { W C F : morphism_class M } [ @has_pushouts M 𝓜] ( h : is_model_category W C F )
+ {a b a' b'} {f : a ⟶ b} {f' : a' ⟶ b'} (r : retract f f') (hf : W f) : W f' := begin
+   rcases h.acf.fact f' with ⟨ c, α, β, WCα, Fβ, f'_fact ⟩,
+   cases has_pushouts.pushout α r.ia with z γ δ po,
+   have WCδ : (C ∩ W) δ := by { rw h.acf.llp, rw h.acf.llp at WCα, exact llp_pushout F po WCα },
+   have uq := @Is_pushout.uniqueness M 𝓜 a' c a z α r.ia γ δ po,
+   have rεβ : retract (po.induced (β ≫ r.ib) f (by { rw [← category.assoc, f'_fact], exact r.hi.symm})) β := {
+     ia := γ,
+     ra := po.induced (𝟙 c) (r.ra ≫ α) (by { rw [category.comp_id, ← category.assoc, r.ha, category.id_comp] }),
+     ib := r.ib,
+     rb := r.rb,
+     ha := by simp,
+     hb := r.hb,
+     hi := by simp,
+     hr := by { 
+      refine uq _ _, 
+      rw [← category.assoc,
+          Is_pushout.induced_commutes₀ po _ _ _,
+          ← category.assoc, 
+          Is_pushout.induced_commutes₀ po _ _ _, 
+          category.assoc,
+          category.id_comp,
+          r.hb,
+          category.comp_id],
+      rw [← category.assoc,
+          Is_pushout.induced_commutes₁ po _ _ _,
+          ← category.assoc,
+          Is_pushout.induced_commutes₁ po _ _ _,
+          category.assoc,
+          f'_fact,
+          r.hr],
+      }
+    },
+   rw ← f'_fact,
+   refine h.weq.weq_comp a' c b' α β WCα.2 _,
+   refine is_model_category.weq_of_weq_retract_fib h rεβ _ Fβ,
+   refine h.weq.weq_cancel_left WCδ.2 _,
+   rw Is_pushout.induced_commutes₁ po _ _ _,
+   assumption,
 end
 
 omit 𝓜
@@ -46,7 +89,12 @@ class model_category (M : Type u) extends category.{v} M :=
 (W C F : morphism_class M)
 (h : is_model_category W C F)
 
-variables {M}
+-- variables { C: Type u } [mc: model_category C] {a b : C} { f: a ⟶ b }
+-- lemma model_category.weq_of_weq_retract { C: Type u } [mc: model_category C]
+--  {a b a' b' : C} {f : a ⟶ b} {f' : a' ⟶ b'} (r : retract f f') ( hf : W f ) : W f' := 
+-- begin
+  
+-- end
 include 𝓜
 
 /-- We can skip checking the condition C ∩ W ⊆ AC. Compare Hirschhorn, Theorem 11.3.1. -/
@@ -83,7 +131,7 @@ begin
   have : retract g f,
   { refine ⟨𝟙 a, 𝟙 a, l, h, _, _, _, _⟩,
     all_goals { tidy } },
-  exact acf.retract this g_ac
+  exact acf.retract_left this g_ac
 end
 
 def model_category.mk' [has_limits M] [has_colimits M] {W C AF AC F : morphism_class M}
