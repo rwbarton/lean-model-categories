@@ -75,9 +75,9 @@ lemma is_model_category.weq_of_weq_retract { W C F : morphism_class M } [ @has_p
       }
     },
    rw ← f'_fact,
-   refine h.weq.weq_comp a' c b' α β WCα.2 _,
+   apply h.weq.weq_comp a' c b' α β WCα.2,
    refine is_model_category.weq_of_weq_retract_fib h rεβ _ Fβ,
-   refine h.weq.weq_cancel_left WCδ.2 _,
+   apply h.weq.weq_cancel_left WCδ.2,
    rw Is_pushout.induced_commutes₁ po _ _ _,
    assumption,
 end
