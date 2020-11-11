@@ -88,13 +88,6 @@ class model_category (M : Type u) extends category.{v} M :=
 (cocomplete : has_colimits M)
 (W C F : morphism_class M)
 (h : is_model_category W C F)
-
--- variables { C: Type u } [mc: model_category C] {a b : C} { f: a ⟶ b }
--- lemma model_category.weq_of_weq_retract { C: Type u } [mc: model_category C]
---  {a b a' b' : C} {f : a ⟶ b} {f' : a' ⟶ b'} (r : retract f f') ( hf : W f ) : W f' := 
--- begin
-  
--- end
 include 𝓜
 
 /-- We can skip checking the condition C ∩ W ⊆ AC. Compare Hirschhorn, Theorem 11.3.1. -/
